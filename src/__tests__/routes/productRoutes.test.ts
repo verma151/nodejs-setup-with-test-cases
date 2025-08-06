@@ -125,6 +125,15 @@ describe('Product Routes with JWT Authentication', () => {
       expect(res.status).toBe(500);
       expect(res.body.success).toBe(false);
     });
+
+    it('should return 404 for an unknown route', async () => {
+      const res = await request(app)
+        .get('/invalid-route')
+        .set('Authorization', `Bearer ${validToken}`);
+
+      expect(res.status).toBe(404);
+    });
+
   });
 
   describe('GET /products/:id', () => {
