@@ -110,6 +110,21 @@ describe('Product Routes with JWT Authentication', () => {
       expect(res.body.success).toBe(false);
       expect(res.body.message).toBe('No products found');
     });
+
+     it('should return 500 when get all fails with valid JWT', async () => {
+      const getMock = jest.fn().mockRejectedValue(new Error('Validation error'));
+      (getProductModel as jest.Mock).mockReturnValue(function () {
+        return { get: getMock };
+      });
+
+      const res = await request(app)
+        .get('/products')
+        .set('Authorization', `Bearer ${validToken}`)
+        .send({ name: 'Test Product', price: 99 });
+
+      expect(res.status).toBe(500);
+      expect(res.body.success).toBe(false);
+    });
   });
 
   describe('GET /products/:id', () => {
@@ -148,6 +163,21 @@ describe('Product Routes with JWT Authentication', () => {
       expect(res.status).toBe(401);
       expect(res.body.status).toBe(false);
     });
+
+    it('should return 500 when get by product fails with valid JWT', async () => {
+      const getMock = jest.fn().mockRejectedValue(new Error('Validation error'));
+      (getProductModel as jest.Mock).mockReturnValue(function () {
+        return { get: getMock };
+      });
+
+      const res = await request(app)
+        .get(`/products/${mockProduct._id}`)
+        .set('Authorization', `Bearer ${validToken}`)
+        .send({ name: 'Test Product', price: 99 });
+
+      expect(res.status).toBe(500);
+      expect(res.body.success).toBe(false);
+    });
   });
 
   describe('POST /products', () => {
@@ -177,7 +207,7 @@ describe('Product Routes with JWT Authentication', () => {
       expect(res.body.message).toBe('Please re-login to use application');
     });
 
-    it('should return 400 when creation fails with valid JWT', async () => {
+    it('should return 500 when creation fails with valid JWT', async () => {
       const saveMock = jest.fn().mockRejectedValue(new Error('Validation error'));
       (getProductModel as jest.Mock).mockReturnValue(function () {
         return { save: saveMock };
@@ -231,6 +261,21 @@ describe('Product Routes with JWT Authentication', () => {
       expect(res.status).toBe(400);
       expect(res.body.success).toBe(false);
     });
+
+    it('should return 500 when update product fails with valid JWT', async () => {
+      const updateMock = jest.fn().mockRejectedValue(new Error('Validation error'));
+      (getProductModel as jest.Mock).mockReturnValue(function () {
+        return { update: updateMock };
+      });
+
+      const res = await request(app)
+        .put(`/products/${mockProduct._id}`)
+        .set('Authorization', `Bearer ${validToken}`)
+        .send({ name: 'Test Product', price: 99 });
+
+      expect(res.status).toBe(500);
+      expect(res.body.success).toBe(false);
+    });
   });
 
   describe('DELETE /products/:id', () => {
@@ -265,6 +310,20 @@ describe('Product Routes with JWT Authentication', () => {
         .set('Authorization', `Bearer ${validToken}`);
 
       expect(res.status).toBe(400);
+      expect(res.body.success).toBe(false);
+    });
+
+    it('should return 500 when delete with valid JWT', async () => {
+      const deleteMock = jest.fn().mockRejectedValue(new Error('Validation error'));
+      (getProductModel as jest.Mock).mockReturnValue(function () {
+        return { delete: deleteMock };
+      });
+
+      const res = await request(app)
+        .delete(`/products/${mockProduct._id}`)
+        .set('Authorization', `Bearer ${validToken}`);
+
+      expect(res.status).toBe(500);
       expect(res.body.success).toBe(false);
     });
   });
