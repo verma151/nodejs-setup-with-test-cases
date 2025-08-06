@@ -5,8 +5,6 @@ import { userController } from '../controller/users'
 const userManager = new userController()
 
 
-
-
 router.post('/signup', userManager.signup)
 router.post('/login', userManager.login)
 
